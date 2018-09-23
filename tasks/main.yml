@@ -1,0 +1,92 @@
+---
+# tasks file for ansible-role-uWSGI
+
+# uWSGI installation
+
+- name: Installing uWSGI dependencies
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python3-setuptools
+    - python3-dev
+    - build-essential
+
+- name: Install pip3
+  easy_install:
+    state: present
+    name: pip
+    executable: easy_install3
+
+- name: Install virtualenv and uWSGI
+  pip:
+    state: present
+    name: "{{ item }}"
+    executable: pip3
+  with_items:
+    - virtualenv
+    - uwsgi
+    - uwsgitop
+
+# uWSGI configuration and log folders
+
+- name: Create uWSGI folders
+  file:
+    state: directory
+    path: "{{ item.path }}"
+    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: '0755'
+  with_items:
+    # Configuration
+    - path: /etc/uwsgi/apps-available
+    - path: /etc/uwsgi/apps-enabled
+    # Logs
+    - path: /var/log/uwsgi
+      user: www-data
+      group: www-data
+
+- name: Setup log rotation on uWSGI log folder
+  copy:
+    src: uwsgi-logrotate
+    dest: /etc/logrotate.d/uwsgi
+    mode: '0644'
+
+- name: Frequently kickoff log rotation
+  cron:
+    state: present
+    name: uWSGI log rotation
+    special_time: hourly
+    job: /usr/sbin/logrotate -f /etc/logrotate.d/uwsgi
+
+- name: Deploy emperor.ini configuration
+  template:
+    src: emperor.ini.j2
+    dest: /etc/uwsgi/emperor.ini
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload Emperor
+
+# uWSGI service setup
+
+- name: Deploy uWSGI Emperor service
+  copy:
+    src: emperor-systemd
+    dest: /etc/systemd/system/emperor.service
+    mode: '0644'
+
+- name: Deploy uWSGI Emperor default script
+  template:
+    src: emperor-default.sh.j2
+    dest: /etc/default/emeperor
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable and start uWSGI Emperor service
+  systemd:
+    state: started
+    daemon_reload: yes
+    enabled: yes
+    name: emperor.service

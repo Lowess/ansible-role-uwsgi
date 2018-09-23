@@ -1,0 +1,23 @@
+---
+# handlers file for ansible-role-uwsgi
+
+- name: Start Emperor
+  systemd:
+    state: started
+    name: emperor
+
+- name: Stop Emperor
+  systemd:
+    state: stopped
+    name: emperor
+
+- name: Restart Emperor
+  systemd:
+    state: restarted
+    name: emperor
+
+- name: Reload Emperor
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: emperor
