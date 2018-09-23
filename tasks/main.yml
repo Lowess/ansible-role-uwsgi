@@ -85,8 +85,7 @@
     mode: '0644'
 
 - name: Enable and start uWSGI Emperor service
-  systemd:
+  service:
     state: started
-    daemon_reload: yes
+    name: emperor
     enabled: yes
-    name: emperor.service
