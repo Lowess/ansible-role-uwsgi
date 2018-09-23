@@ -79,7 +79,7 @@
 - name: Deploy uWSGI Emperor default script
   template:
     src: emperor-default.sh.j2
-    dest: /etc/default/emeperor
+    dest: /etc/default/emperor
     owner: root
     group: root
     mode: '0644'
