@@ -28,4 +28,5 @@
   service:
     state: reloaded
     name: emperor
+  when: ansible_service_mgr == 'upstart'
   listen: Reload Emperor
