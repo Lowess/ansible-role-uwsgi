@@ -75,14 +75,14 @@
     src: emperor-systemd
     dest: /etc/systemd/system/emperor.service
     mode: '0644'
-  when: ansible_pkg_mgr == 'systemd'
+  when: ansible_service_mgr == 'systemd'
 
 - name: Deploy uWSGI Emperor initd service
   copy:
     src: emperor-initd
     dest: /etc/init.d/emperor
     mode: '0744'
-  when: ansible_pkg_mgr == 'upstart'
+  when: ansible_service_mgr == 'upstart'
 
 - name: Deploy uWSGI Emperor default script
   template:
