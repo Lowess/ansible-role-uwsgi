@@ -16,8 +16,16 @@
     state: restarted
     name: emperor
 
-- name: Reload Emperor
+- name: Reload Emperor Systemd
   systemd:
     state: restarted
     daemon_reload: yes
     name: emperor
+  when: ansible_service_mgr == 'systemd'
+  listen: Reload Emperor
+
+- name: Reload Emperor Initd
+  service:
+    state: reloaded
+    name: emperor
+  listen: Reload Emperor
