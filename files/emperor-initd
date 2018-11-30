@@ -55,7 +55,7 @@ do_start()
         --pidfile $PIDFILE \
         --daemonize /var/log/$NAME/uwsgi-emperor.log"
 
-    if [ -n "$MAX_OPEN_FILES" ]; then
+    if [ -n "$MAX_OPEN_FILES" ] && grep -qav docker /proc/1/cgroup; then
         ulimit -n $MAX_OPEN_FILES
     fi
 
