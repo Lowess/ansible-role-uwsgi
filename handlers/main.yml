@@ -26,7 +26,7 @@
 
 - name: Reload Emperor Initd
   service:
-    state: reloaded
+    state: restarted
     name: emperor
   when: ansible_service_mgr == 'upstart'
   listen: Reload Emperor
